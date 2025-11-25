@@ -1,0 +1,275 @@
+// Script de creación de colección y datos para MongoDB
+// AgroData Sur - Opiniones de Clientes
+
+// Conectar a la base de datos
+use agrodata_sur;
+
+// Crear colección de opiniones
+db.createCollection("opiniones_clientes");
+
+// Insertar datos de ejemplo (200+ registros)
+db.opiniones_clientes.insertMany([
+    {
+        id_cliente: "CLI-001",
+        nombre: "María González",
+        region: "La Araucanía",
+        producto_comprado: "MANZ-001",
+        calificacion: 5,
+        comentario: "Excelente calidad de manzanas, muy frescas y dulces",
+        fecha: new Date("2025-01-15")
+    },
+    {
+        id_cliente: "CLI-002",
+        nombre: "Pedro Sánchez",
+        region: "Los Ríos",
+        producto_comprado: "PERA-002",
+        calificacion: 4,
+        comentario: "Buen producto, aunque el tiempo de entrega fue un poco largo",
+        fecha: new Date("2025-01-16")
+    },
+    {
+        id_cliente: "CLI-003",
+        nombre: "Carmen Rivas",
+        region: "Los Lagos",
+        producto_comprado: "UVA-003",
+        calificacion: 5,
+        comentario: "Perfectas para exportación, empaque impecable",
+        fecha: new Date("2025-01-17")
+    },
+    {
+        id_cliente: "CLI-004",
+        nombre: "José Muñoz",
+        region: "La Araucanía",
+        producto_comprado: "CEREZA-004",
+        calificacion: 5,
+        comentario: "Las mejores cerezas que he comprado, totalmente recomendable",
+        fecha: new Date("2025-01-18")
+    },
+    {
+        id_cliente: "CLI-005",
+        nombre: "Ana Morales",
+        region: "Los Ríos",
+        producto_comprado: "ARAND-005",
+        calificacion: 4,
+        comentario: "Buenos arándanos, frescos y sabrosos",
+        fecha: new Date("2025-01-19")
+    },
+    {
+        id_cliente: "CLI-006",
+        nombre: "Luis Torres",
+        region: "Los Lagos",
+        producto_comprado: "TOMATE-006",
+        calificacion: 3,
+        comentario: "Calidad regular, algunos tomates venían muy maduros",
+        fecha: new Date("2025-01-20")
+    },
+    {
+        id_cliente: "CLI-007",
+        nombre: "Patricia Fernández",
+        region: "La Araucanía",
+        producto_comprado: "LECHUGA-007",
+        calificacion: 5,
+        comentario: "Lechuga muy fresca y crujiente, excelente para ensaladas",
+        fecha: new Date("2025-01-21")
+    },
+    {
+        id_cliente: "CLI-008",
+        nombre: "Roberto Castro",
+        region: "Los Ríos",
+        producto_comprado: "ZANAHORIA-008",
+        calificacion: 4,
+        comentario: "Zanahorias de buen tamaño y frescura",
+        fecha: new Date("2025-01-22")
+    },
+    {
+        id_cliente: "CLI-009",
+        nombre: "Gloria Herrera",
+        region: "Los Lagos",
+        producto_comprado: "BROCOLI-009",
+        calificacion: 5,
+        comentario: "Brócoli de primera calidad, llegó en perfecto estado",
+        fecha: new Date("2025-01-23")
+    },
+    {
+        id_cliente: "CLI-010",
+        nombre: "Fernando Silva",
+        region: "La Araucanía",
+        producto_comprado: "COLIFLOR-010",
+        calificacion: 4,
+        comentario: "Producto fresco y bien empacado",
+        fecha: new Date("2025-01-24")
+    },
+    {
+        id_cliente: "CLI-011",
+        nombre: "Mónica Vargas",
+        region: "Los Ríos",
+        producto_comprado: "TRIGO-011",
+        calificacion: 5,
+        comentario: "Trigo de excelente calidad, sin impurezas",
+        fecha: new Date("2025-01-25")
+    },
+    {
+        id_cliente: "CLI-012",
+        nombre: "Ricardo Pinto",
+        region: "Los Lagos",
+        producto_comprado: "AVENA-012",
+        calificacion: 4,
+        comentario: "Avena limpia y bien procesada",
+        fecha: new Date("2025-01-26")
+    },
+    {
+        id_cliente: "CLI-013",
+        nombre: "Sofía Ramírez",
+        region: "La Araucanía",
+        producto_comprado: "MANZ-001",
+        calificacion: 5,
+        comentario: "Manzanas perfectas, dulces y crujientes",
+        fecha: new Date("2025-01-27")
+    },
+    {
+        id_cliente: "CLI-014",
+        nombre: "Andrés Ortiz",
+        region: "Los Ríos",
+        producto_comprado: "PERA-002",
+        calificacion: 3,
+        comentario: "Algunas peras llegaron con golpes",
+        fecha: new Date("2025-01-28")
+    },
+    {
+        id_cliente: "CLI-015",
+        nombre: "Elena Rojas",
+        region: "Los Lagos",
+        producto_comprado: "UVA-003",
+        calificacion: 5,
+        comentario: "Uvas deliciosas, ideales para la exportación",
+        fecha: new Date("2025-01-29")
+    },
+    {
+        id_cliente: "CLI-016",
+        nombre: "Diego Campos",
+        region: "La Araucanía",
+        producto_comprado: "CEREZA-004",
+        calificacion: 5,
+        comentario: "Cerezas de exportación, calidad premium",
+        fecha: new Date("2025-01-30")
+    },
+    {
+        id_cliente: "CLI-017",
+        nombre: "Isabel Núñez",
+        region: "Los Ríos",
+        producto_comprado: "ARAND-005",
+        calificacion: 4,
+        comentario: "Arándanos frescos, buen sabor",
+        fecha: new Date("2025-01-31")
+    },
+    {
+        id_cliente: "CLI-018",
+        nombre: "Héctor Vera",
+        region: "Los Lagos",
+        producto_comprado: "TOMATE-006",
+        calificacion: 4,
+        comentario: "Buenos tomates para procesamiento",
+        fecha: new Date("2025-02-01")
+    },
+    {
+        id_cliente: "CLI-019",
+        nombre: "Lorena Guzmán",
+        region: "La Araucanía",
+        producto_comprado: "LECHUGA-007",
+        calificacion: 5,
+        comentario: "Lechuga hidropónica de primera",
+        fecha: new Date("2025-02-02")
+    },
+    {
+        id_cliente: "CLI-020",
+        nombre: "Mauricio Peña",
+        region: "Los Ríos",
+        producto_comprado: "ZANAHORIA-008",
+        calificacion: 5,
+        comentario: "Excelentes zanahorias orgánicas",
+        fecha: new Date("2025-02-03")
+    }
+]);
+
+// Generar más registros programáticamente
+const productos = ["MANZ-001", "PERA-002", "UVA-003", "CEREZA-004", "ARAND-005", "TOMATE-006", "LECHUGA-007", "ZANAHORIA-008", "BROCOLI-009", "COLIFLOR-010", "TRIGO-011", "AVENA-012"];
+const regiones = ["La Araucanía", "Los Ríos", "Los Lagos"];
+const nombres = ["Juan Pérez", "María López", "Carlos Díaz", "Laura Martínez", "Francisco Ruiz", "Carla Jiménez", "Miguel Ángel Torres", "Valentina Flores", "Sebastián Romero", "Catalina Vega"];
+const comentariosPositivos = [
+    "Excelente calidad del producto",
+    "Muy satisfecho con la compra",
+    "Producto fresco y bien empacado",
+    "Superó mis expectativas",
+    "Definitivamente volveré a comprar",
+    "Calidad premium, totalmente recomendable",
+    "El mejor producto que he probado",
+    "Llegó en perfectas condiciones"
+];
+const comentariosNeutrales = [
+    "Producto aceptable, cumple expectativas",
+    "Calidad estándar, nada extraordinario",
+    "Está bien, pero podría mejorar",
+    "Producto normal, sin sorpresas"
+];
+const comentariosNegativos = [
+    "Algunos productos llegaron dañados",
+    "La calidad no fue la esperada",
+    "Tuve problemas con la entrega",
+    "No cumplió con lo prometido"
+];
+
+let batch = [];
+for (let i = 21; i <= 250; i++) {
+    const calificacion = Math.floor(Math.random() * 5) + 1;
+    let comentario;
+    
+    if (calificacion >= 4) {
+        comentario = comentariosPositivos[Math.floor(Math.random() * comentariosPositivos.length)];
+    } else if (calificacion === 3) {
+        comentario = comentariosNeutrales[Math.floor(Math.random() * comentariosNeutrales.length)];
+    } else {
+        comentario = comentariosNegativos[Math.floor(Math.random() * comentariosNegativos.length)];
+    }
+    
+    const fecha = new Date(2025, Math.floor(Math.random() * 11), Math.floor(Math.random() * 28) + 1);
+    
+    batch.push({
+        id_cliente: `CLI-${String(i).padStart(3, '0')}`,
+        nombre: nombres[Math.floor(Math.random() * nombres.length)],
+        region: regiones[Math.floor(Math.random() * regiones.length)],
+        producto_comprado: productos[Math.floor(Math.random() * productos.length)],
+        calificacion: calificacion,
+        comentario: comentario,
+        fecha: fecha
+    });
+    
+    // Insertar en lotes de 50
+    if (batch.length === 50) {
+        db.opiniones_clientes.insertMany(batch);
+        batch = [];
+    }
+}
+
+// Insertar registros restantes
+if (batch.length > 0) {
+    db.opiniones_clientes.insertMany(batch);
+}
+
+// Verificar cantidad de registros
+print("Total de registros insertados:");
+print(db.opiniones_clientes.countDocuments());
+
+// Consultas de validación
+print("\nPrimeros 5 registros:");
+db.opiniones_clientes.find().limit(5).pretty();
+
+print("\nCalificaciones por producto:");
+db.opiniones_clientes.aggregate([
+    { $group: { _id: "$producto_comprado", promedio: { $avg: "$calificacion" }, total: { $sum: 1 } } },
+    { $sort: { promedio: -1 } }
+]);
+
+print("\nOpiniones por región:");
+db.opiniones_clientes.aggregate([
+    { $group: { _id: "$region", total: { $sum: 1 } } }
+]);

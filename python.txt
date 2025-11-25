@@ -1,0 +1,161 @@
+#!/usr/bin/env python3
+"""
+Script para generar datos de sensores IoT para AgroData Sur
+Genera archivos CSV con lecturas de temperatura, humedad y CO2
+"""
+
+import csv
+import random
+from datetime import datetime, timedelta
+
+# Configuración de sensores
+SENSORES = [
+    {"id": "SENS-001", "ubicacion": "Invernadero_Temuco_A"},
+    {"id": "SENS-002", "ubicacion": "Invernadero_Temuco_B"},
+    {"id": "SENS-003", "ubicacion": "Invernadero_Valdivia_A"},
+    {"id": "SENS-004", "ubicacion": "Invernadero_Valdivia_B"},
+    {"id": "SENS-005", "ubicacion": "Invernadero_PuertoMontt_A"},
+    {"id": "SENS-006", "ubicacion": "Invernadero_PuertoMontt_B"},
+    {"id": "SENS-007", "ubicacion": "Campo_Abierto_Temuco_1"},
+    {"id": "SENS-008", "ubicacion": "Campo_Abierto_Valdivia_1"},
+    {"id": "SENS-009", "ubicacion": "Campo_Abierto_PuertoMontt_1"},
+    {"id": "SENS-010", "ubicacion": "Bodega_Empaque_Temuco"}
+]
+
+def generar_temperatura(hora, ubicacion):
+    """Genera temperatura realista según hora y ubicación"""
+    base = 15.0  # Temperatura base en Chile sur
+    
+    # Variación por hora (día más caluroso)
+    if 6 <= hora <= 18:
+        variacion_hora = (hora - 6) * 1.5 if hora <= 14 else (18 - hora) * 1.5
+    else:
+        variacion_hora = -5
+    
+    # Variación por tipo de ubicación
+    if "Invernadero" in ubicacion:
+        base += 5  # Invernaderos más cálidos
+    elif "Bodega" in ubicacion:
+        base += 2
+    
+    # Añadir ruido aleatorio
+    ruido = random.uniform(-2, 2)
+    
+    return round(base + variacion_hora + ruido, 2)
+
+def generar_humedad(temperatura, ubicacion):
+    """Genera humedad relativa según temperatura y ubicación"""
+    # Humedad base alta (clima sur de Chile)
+    base = 75.0
+    
+    # Relación inversa con temperatura
+    ajuste_temp = -(temperatura - 15) * 1.5
+    
+    # Invernaderos más húmedos
+    if "Invernadero" in ubicacion:
+        base += 10
+    
+    humedad = base + ajuste_temp + random.uniform(-5, 5)
+    
+    # Limitar entre 30% y 95%
+    return round(max(30, min(95, humedad)), 2)
+
+def generar_co2(hora, ubicacion):
+    """Genera niveles de CO2 en ppm"""
+    base = 400  # Nivel atmosférico normal
+    
+    # En invernaderos, CO2 varía más
+    if "Invernadero" in ubicacion:
+        # Durante el día, las plantas consumen CO2
+        if 6 <= hora <= 18:
+            variacion = random.uniform(-50, 50)
+        else:
+            variacion = random.uniform(50, 150)
+    else:
+        variacion = random.uniform(-20, 20)
+    
+    return round(base + variacion, 2)
+
+def generar_datos_sensores(num_registros=250, archivo_salida="datos_sensores.csv"):
+    """Genera dataset de sensores y lo guarda en CSV"""
+    
+    fecha_inicio = datetime(2025, 1, 1, 0, 0, 0)
+    
+    with open(archivo_salida, 'w', newline='') as csvfile:
+        fieldnames = ['id_sensor', 'ubicacion', 'temperatura', 'humedad', 'co2', 'timestamp']
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        
+        writer.writeheader()
+        
+        for i in range(num_registros):
+            # Incrementar tiempo (lecturas cada minuto aproximadamente)
+            timestamp = fecha_inicio + timedelta(minutes=i)
+            
+            # Seleccionar sensor aleatoriamente
+            sensor = random.choice(SENSORES)
+            
+            # Generar lecturas
+            hora = timestamp.hour
+            temp = generar_temperatura(hora, sensor['ubicacion'])
+            hum = generar_humedad(temp, sensor['ubicacion'])
+            co2 = generar_co2(hora, sensor['ubicacion'])
+            
+            writer.writerow({
+                'id_sensor': sensor['id'],
+                'ubicacion': sensor['ubicacion'],
+                'temperatura': temp,
+                'humedad': hum,
+                'co2': co2,
+                'timestamp': timestamp.strftime('%Y-%m-%d %H:%M:%S')
+            })
+    
+    print(f"Archivo {archivo_salida} generado con {num_registros} registros")
+    print(f"Rango de fechas: {fecha_inicio} a {fecha_inicio + timedelta(minutes=num_registros-1)}")
+
+def generar_multiples_archivos():
+    """Genera varios archivos CSV para diferentes períodos"""
+    
+    # Generar datos para enero 2025
+    print("Generando datos para enero 2025...")
+    generar_datos_sensores(num_registros=250, archivo_salida="sensores_enero_2025.csv")
+    
+    # Generar datos para febrero 2025
+    print("\nGenerando datos para febrero 2025...")
+    fecha_inicio_feb = datetime(2025, 2, 1, 0, 0, 0)
+    
+    with open("sensores_febrero_2025.csv", 'w', newline='') as csvfile:
+        fieldnames = ['id_sensor', 'ubicacion', 'temperatura', 'humedad', 'co2', 'timestamp']
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writeheader()
+        
+        for i in range(250):
+            timestamp = fecha_inicio_feb + timedelta(minutes=i)
+            sensor = random.choice(SENSORES)
+            hora = timestamp.hour
+            temp = generar_temperatura(hora, sensor['ubicacion'])
+            hum = generar_humedad(temp, sensor['ubicacion'])
+            co2 = generar_co2(hora, sensor['ubicacion'])
+            
+            writer.writerow({
+                'id_sensor': sensor['id'],
+                'ubicacion': sensor['ubicacion'],
+                'temperatura': temp,
+                'humedad': hum,
+                'co2': co2,
+                'timestamp': timestamp.strftime('%Y-%m-%d %H:%M:%S')
+            })
+    
+    print("Archivo sensores_febrero_2025.csv generado con 250 registros")
+    
+    # Generar archivo consolidado
+    print("\nGenerando archivo consolidado...")
+    generar_datos_sensores(num_registros=500, archivo_salida="sensores_consolidado_2025.csv")
+
+if __name__ == "__main__":
+    print("=== Generador de Datos de Sensores IoT - AgroData Sur ===\n")
+    generar_multiples_archivos()
+    print("\n¡Generación de datos completada!")
+    print("\nArchivos generados:")
+    print("- sensores_enero_2025.csv")
+    print("- sensores_febrero_2025.csv")
+    print("- sensores_consolidado_2025.csv")

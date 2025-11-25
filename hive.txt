@@ -1,0 +1,175 @@
+-- Scripts de Hive para AgroData Sur
+-- Creación de base de datos y tablas externas
+
+-- 1. Crear base de datos
+CREATE DATABASE IF NOT EXISTS agrodata_sur;
+USE agrodata_sur;
+
+-- 2. Tabla externa para datos de sensores en HDFS
+CREATE EXTERNAL TABLE IF NOT EXISTS sensores_iot (
+    id_sensor STRING,
+    ubicacion STRING,
+    temperatura FLOAT,
+    humedad FLOAT,
+    co2 FLOAT,
+    timestamp TIMESTAMP
+)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+STORED AS TEXTFILE
+LOCATION '/user/hadoop/datos/sensores/2025/'
+TBLPROPERTIES ("skip.header.line.count"="1");
+
+-- 3. Tabla externa para ventas desde MySQL (requiere Sqoop o carga manual)
+CREATE EXTERNAL TABLE IF NOT EXISTS ventas_historico (
+    id_venta INT,
+    fecha DATE,
+    codigo_producto STRING,
+    cantidad INT,
+    precio_unitario DECIMAL(10,2),
+    sucursal STRING,
+    rut_cliente STRING
+)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+STORED AS TEXTFILE
+LOCATION '/user/hadoop/datos/ventas/2025/';
+
+-- 4. Verificar creación de tablas
+SHOW TABLES;
+
+-- 5. Describir estructura de tablas
+DESCRIBE sensores_iot;
+DESCRIBE ventas_historico;
+
+-- 6. Consultas analíticas de ejemplo
+
+-- 6.1 Temperatura promedio por ubicación
+SELECT 
+    ubicacion,
+    AVG(temperatura) as temp_promedio,
+    MIN(temperatura) as temp_minima,
+    MAX(temperatura) as temp_maxima,
+    COUNT(*) as num_lecturas
+FROM sensores_iot
+GROUP BY ubicacion
+ORDER BY temp_promedio DESC;
+
+-- 6.2 Humedad promedio por sensor
+SELECT 
+    id_sensor,
+    ubicacion,
+    AVG(humedad) as humedad_promedio,
+    AVG(co2) as co2_promedio
+FROM sensores_iot
+GROUP BY id_sensor, ubicacion
+ORDER BY humedad_promedio DESC;
+
+-- 6.3 Condiciones críticas (temperatura alta y humedad baja)
+SELECT 
+    id_sensor,
+    ubicacion,
+    temperatura,
+    humedad,
+    timestamp
+FROM sensores_iot
+WHERE temperatura > 25 AND humedad < 50
+ORDER BY timestamp DESC;
+
+-- 6.4 Análisis por hora del día
+SELECT 
+    HOUR(timestamp) as hora,
+    AVG(temperatura) as temp_promedio,
+    AVG(humedad) as humedad_promedio,
+    AVG(co2) as co2_promedio,
+    COUNT(*) as lecturas
+FROM sensores_iot
+GROUP BY HOUR(timestamp)
+ORDER BY hora;
+
+-- 6.5 Ventas totales por sucursal (si hay datos cargados)
+SELECT 
+    sucursal,
+    COUNT(*) as num_ventas,
+    SUM(cantidad) as total_productos,
+    SUM(cantidad * precio_unitario) as ingresos_totales
+FROM ventas_historico
+GROUP BY sucursal
+ORDER BY ingresos_totales DESC;
+
+-- 6.6 Productos más vendidos
+SELECT 
+    codigo_producto,
+    COUNT(*) as num_transacciones,
+    SUM(cantidad) as unidades_vendidas,
+    AVG(precio_unitario) as precio_promedio
+FROM ventas_historico
+GROUP BY codigo_producto
+ORDER BY unidades_vendidas DESC
+LIMIT 10;
+
+-- 6.7 Análisis temporal de ventas
+SELECT 
+    YEAR(fecha) as año,
+    MONTH(fecha) as mes,
+    sucursal,
+    SUM(cantidad * precio_unitario) as ingresos
+FROM ventas_historico
+GROUP BY YEAR(fecha), MONTH(fecha), sucursal
+ORDER BY año, mes, ingresos DESC;
+
+-- 7. Tabla particionada por mes (opcional, para optimización)
+CREATE EXTERNAL TABLE IF NOT EXISTS sensores_iot_particionado (
+    id_sensor STRING,
+    ubicacion STRING,
+    temperatura FLOAT,
+    humedad FLOAT,
+    co2 FLOAT,
+    timestamp TIMESTAMP
+)
+PARTITIONED BY (año INT, mes INT)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+STORED AS TEXTFILE
+LOCATION '/user/hadoop/datos/sensores/particionado/';
+
+-- 8. Insertar datos en tabla particionada
+INSERT OVERWRITE TABLE sensores_iot_particionado PARTITION(año=2025, mes=1)
+SELECT 
+    id_sensor,
+    ubicacion,
+    temperatura,
+    humedad,
+    co2,
+    timestamp
+FROM sensores_iot
+WHERE YEAR(timestamp) = 2025 AND MONTH(timestamp) = 1;
+
+-- 9. Análisis integrado: correlación temperatura-ventas (ejemplo avanzado)
+-- Requiere que ambas tablas tengan datos
+SELECT 
+    v.sucursal,
+    AVG(s.temperatura) as temp_promedio,
+    SUM(v.cantidad) as productos_vendidos,
+    CORR(s.temperatura, v.cantidad) as correlacion
+FROM sensores_iot s
+CROSS JOIN ventas_historico v
+WHERE s.ubicacion LIKE CONCAT('%', SUBSTRING(v.sucursal, 1, 6), '%')
+GROUP BY v.sucursal;
+
+-- 10. Vista materializada para reportes frecuentes
+CREATE VIEW IF NOT EXISTS resumen_diario_sensores AS
+SELECT 
+    DATE(timestamp) as fecha,
+    ubicacion,
+    AVG(temperatura) as temp_promedio,
+    MIN(temperatura) as temp_minima,
+    MAX(temperatura) as temp_maxima,
+    AVG(humedad) as humedad_promedio,
+    AVG(co2) as co2_promedio,
+    COUNT(*) as num_lecturas
+FROM sensores_iot
+GROUP BY DATE(timestamp), ubicacion;
+
+-- Consultar la vista
+SELECT * FROM resumen_diario_sensores ORDER BY fecha DESC, ubicacion LIMIT 20;
